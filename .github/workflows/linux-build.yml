@@ -1,0 +1,31 @@
+name: Linux build & test
+
+on:
+  push:
+    branches: [ linux-port-avalonia ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: linux
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+          dotnet-quality: 'preview'
+
+      - name: Restore
+        run: dotnet restore LaserGRBL.Linux.sln
+
+      - name: Build
+        run: dotnet build LaserGRBL.Linux.sln --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test LaserGRBL.Linux.sln --configuration Release --no-build
