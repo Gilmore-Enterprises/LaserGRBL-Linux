@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Portable, headless logic: GrblCore/MarlinCore/SmoothieCore/VigoCore, GrblFile,
+    GrblCommand, StateBuilder, Settings, ComWrapper, CSV, Logger, Tools (non-UI).
+    No UI framework references. No System.Drawing.
+  -->
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <RootNamespace>LaserGRBL</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Maintained serial library with a Linux (termios) backend; replaces the vendored RJCP copy. -->
+    <PackageReference Include="RJCP.SerialPortStream" Version="3.0.1" />
+  </ItemGroup>
+
+</Project>

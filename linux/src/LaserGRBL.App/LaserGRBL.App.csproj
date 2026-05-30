@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Avalonia desktop application. Ported Forms become Windows/UserControls + XAML. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>LaserGRBL</RootNamespace>
+    <AssemblyName>LaserGRBL</AssemblyName>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LaserGRBL.Core\LaserGRBL.Core.csproj" />
+    <ProjectReference Include="..\LaserGRBL.Imaging\LaserGRBL.Imaging.csproj" />
+    <ProjectReference Include="..\LaserGRBL.Platform\LaserGRBL.Platform.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" />
+    <!-- Diagnostics (DevTools) only in Debug builds. -->
+    <PackageReference Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)" Condition="'$(Configuration)' == 'Debug'" />
+    <!-- Pin patched Tmds.DBus.Protocol (transitive via Avalonia.Desktop) to clear GHSA-xrw6-gwf8-vvr9. -->
+    <PackageReference Include="Tmds.DBus.Protocol" Version="0.21.3" />
+  </ItemGroup>
+
+</Project>

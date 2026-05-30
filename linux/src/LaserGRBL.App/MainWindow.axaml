@@ -1,0 +1,12 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="LaserGRBL.MainWindow"
+        Width="900" Height="600"
+        Title="LaserGRBL (Linux port — scaffolding)">
+  <!-- Phase 4 replaces this placeholder with the ported MainForm layout. -->
+  <Panel>
+    <TextBlock HorizontalAlignment="Center"
+               VerticalAlignment="Center"
+               Text="LaserGRBL Linux port — Phase 0 skeleton" />
+  </Panel>
+</Window>

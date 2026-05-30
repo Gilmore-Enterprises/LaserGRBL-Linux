@@ -1,0 +1,22 @@
+<Project>
+  <!--
+    Common build settings for the LaserGRBL Linux port (Avalonia / .NET 10).
+    Scoped under linux/ so it never leaks into the legacy .NET Framework 4.0
+    LaserGRBL.csproj reference project at the repo root.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <!-- Ported code predates nullable-reference and implicit usings; keep off to minimize churn. -->
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <Authors>LaserGRBL contributors (Diego Settimi and others)</Authors>
+    <Product>LaserGRBL</Product>
+
+    <!-- Centralized dependency versions -->
+    <AvaloniaVersion>11.2.1</AvaloniaVersion>
+    <SkiaSharpVersion>2.88.8</SkiaSharpVersion>
+  </PropertyGroup>
+</Project>

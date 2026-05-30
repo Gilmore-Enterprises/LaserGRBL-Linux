@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    OS-abstraction layer. Interfaces here; Windows* and Linux* implementations
+    selected at runtime. Covers serial enumeration, paths, sound, secret storage,
+    external-tool launch, OS info, and file association.
+  -->
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <RootNamespace>LaserGRBL.Platform</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LaserGRBL.Core\LaserGRBL.Core.csproj" />
+  </ItemGroup>
+
+  <!-- WMI-based COM enumeration is Windows-only; reference guarded by RID at build time. -->
+  <ItemGroup Condition="'$(RuntimeIdentifier)' == '' or $([MSBuild]::IsOSPlatform('Windows'))">
+    <PackageReference Include="System.Management" Version="9.0.0" />
+  </ItemGroup>
+
+</Project>
