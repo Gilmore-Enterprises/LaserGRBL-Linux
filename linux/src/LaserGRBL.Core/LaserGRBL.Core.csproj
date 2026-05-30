@@ -15,4 +15,10 @@
     <PackageReference Include="RJCP.SerialPortStream" Version="3.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- GRBL error/alarm/setting code tables. Embedded as "LaserGRBL.CSV.<file>.csv"
+         (RootNamespace=LaserGRBL + CSV folder) to match the names used in GrblCommand. -->
+    <EmbeddedResource Include="CSV\*.csv" />
+  </ItemGroup>
+
 </Project>
