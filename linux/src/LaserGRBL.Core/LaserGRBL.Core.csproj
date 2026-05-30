@@ -8,17 +8,26 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <RootNamespace>LaserGRBL</RootNamespace>
+    <!-- System.Formats.Nrbf is the supported read-only NRBF decoder but is gated behind the
+         SYSLIB5005 "evaluation" diagnostic in .NET 10. We use it only for legacy .bin migration. -->
+    <NoWarn>$(NoWarn);SYSLIB5005</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
     <!-- Maintained serial library with a Linux (termios) backend; replaces the vendored RJCP copy. -->
     <PackageReference Include="RJCP.SerialPortStream" Version="3.0.1" />
+    <!-- Read-only NRBF decoder to migrate the legacy BinaryFormatter settings .bin (no BinaryFormatter). -->
+    <PackageReference Include="System.Formats.Nrbf" Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <!-- GRBL error/alarm/setting code tables. Embedded as "LaserGRBL.CSV.<file>.csv"
          (RootNamespace=LaserGRBL + CSV folder) to match the names used in GrblCommand. -->
     <EmbeddedResource Include="CSV\*.csv" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="LaserGRBL.Tests" />
   </ItemGroup>
 
 </Project>
