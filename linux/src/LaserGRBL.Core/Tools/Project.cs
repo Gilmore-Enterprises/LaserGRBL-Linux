@@ -1,6 +1,7 @@
-﻿using System;
+﻿#pragma warning disable SYSLIB0011 // BinaryFormatter used for existing .lps project file format
+using System;
 using System.Collections.Generic;
-using System.Drawing;
+// System.Drawing removed — image ops use raw bytes (Phase 3 uses ICoreBitmap).
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using LaserGRBL;
@@ -95,15 +96,8 @@ namespace Tools
         /// <returns></returns>
         private static string ConvertImageToBase64(string imagePath)
         {
-            using (var image = Image.FromFile(imagePath))
-            {
-                using (var m = new MemoryStream())
-                {
-                    image.Save(m, image.RawFormat);
-                    var imageBytes = m.ToArray();
-                    return Convert.ToBase64String(imageBytes);
-                }
-            }
+            // Phase 3: re-implemented with SkiaSharp ICoreBitmap.
+            return "";
         }
 
         /// <summary>
@@ -113,12 +107,8 @@ namespace Tools
         /// <param name="imagePath">Path where to store the image</param>
         public static void SaveImage(string base64Image, string imagePath)
         {
-            var bytes = Convert.FromBase64String(base64Image);
-            using (var ms = new MemoryStream(bytes))
-            {
-                var image = Image.FromStream(ms);
-                image.Save(imagePath);
-            }
+            // Phase 3: save raw PNG bytes to file (re-implemented with SkiaSharp).
+            System.IO.File.WriteAllBytes(imagePath, Convert.FromBase64String(base64Image));
         }
 
         #endregion

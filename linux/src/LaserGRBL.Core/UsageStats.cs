@@ -12,7 +12,7 @@ using System.IO;
 using System.Net;
 using System.Runtime.Serialization;
 using System.Linq;
-using LaserGRBL.UserControls;
+// LaserGRBL.UserControls removed: GrblPanel3D renderer strings accessed via static UsageStats.RendererInfo.
 
 namespace LaserGRBL
 {
@@ -20,6 +20,18 @@ namespace LaserGRBL
     // statistics will be used to provide better versions
     // focusing on the development of the most used features
     // and translation for most used languages
+
+	/// <summary>
+	/// OpenGL renderer info set by the App layer (GrblPanel3D) so Core/UsageStats
+	/// can include it in telemetry without depending on the UI project.
+	/// </summary>
+	public static class RendererInfo
+	{
+		public static string Vendor           { get; set; } = "";
+		public static string Renderer         { get; set; } = "";
+		public static string GlVersion        { get; set; } = "";
+		public static string DiagnosticMessage { get; set; } = "";
+	}
 
     [Serializable]
     public class UsageStats
@@ -59,7 +71,7 @@ namespace LaserGRBL
         private DateTime LastSent = DateTime.MinValue;
         private DateTime InstalledDate = System.IO.Directory.GetCreationTimeUtc(".");
         private Version Version = new Version(0, 0, 0);
-        private GrblCore.GrblVersionInfo GrblVersion = new GrblCore.GrblVersionInfo(0, 0);
+        private GrblVersionInfo GrblVersion = new GrblVersionInfo(0, 0);
         private int Locale = 0;
         private int UiLang = 0;
         private int UsageCount = 0;
@@ -226,10 +238,10 @@ namespace LaserGRBL
 					{ "vendor", VendorString },
 					{ "fPassthrough", Counters.Passthrough.ToString() },
 					{ "RenderType", $"{(int)Settings.RequestedGraphicMode}|{(int)Settings.CurrentGraphicMode}" },
-					{ "RenderVendor", GrblPanel3D.CurrentVendor },
-					{ "RenderName", GrblPanel3D.CurrentRenderer },
-					{ "RenderGLVersion", GrblPanel3D.CurrentGLVersion },
-					{ "RenderError", GrblPanel3D.GlDiagnosticMessage },
+					{ "RenderVendor", RendererInfo.Vendor },
+					{ "RenderName", RendererInfo.Renderer },
+					{ "RenderGLVersion", RendererInfo.GlVersion },
+					{ "RenderError", RendererInfo.DiagnosticMessage },
 				};
 
                 // client.UploadValues returns page's source as byte array (byte[]) so it must be transformed into a string

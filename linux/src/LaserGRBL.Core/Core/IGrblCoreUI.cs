@@ -54,5 +54,11 @@ namespace LaserGRBL
 
 		/// <summary>Show the laser selector dialog. Returns the selected GUID or null.</summary>
 		string ShowLaserSelector();
+
+		/// <summary>
+		/// Show the safety countdown dialog before firing the laser.
+		/// Returns true if the user confirmed (countdown completed / bypassed).
+		/// </summary>
+		bool ShowSafetyCountdown();
 	}
 }

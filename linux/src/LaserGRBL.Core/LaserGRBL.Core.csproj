@@ -10,7 +10,7 @@
     <RootNamespace>LaserGRBL</RootNamespace>
     <!-- System.Formats.Nrbf is the supported read-only NRBF decoder but is gated behind the
          SYSLIB5005 "evaluation" diagnostic in .NET 10. We use it only for legacy .bin migration. -->
-    <NoWarn>$(NoWarn);SYSLIB5005</NoWarn>
+    <NoWarn>$(NoWarn);SYSLIB5005;SYSLIB0011</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,12 +18,28 @@
     <PackageReference Include="RJCP.SerialPortStream" Version="3.0.1" />
     <!-- Read-only NRBF decoder to migrate the legacy BinaryFormatter settings .bin (no BinaryFormatter). -->
     <PackageReference Include="System.Formats.Nrbf" Version="9.0.0" />
+    <PackageReference Include="System.IO.Ports" Version="9.0.0" />
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="9.0.0" />
+    <PackageReference Include="WebSocketSharp-netstandard" Version="1.0.1" />
   </ItemGroup>
 
   <ItemGroup>
     <!-- GRBL error/alarm/setting code tables. Embedded as "LaserGRBL.CSV.<file>.csv"
          (RootNamespace=LaserGRBL + CSV folder) to match the names used in GrblCommand. -->
     <EmbeddedResource Include="CSV\*.csv" />
+    <!-- Localized UI strings (18 languages). ResourceManager works on .NET 10 as-is. -->
+    <EmbeddedResource Update="Strings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <!-- Satellite .resx files auto-included by SDK; explicit entry removed to avoid NETSDK1022. -->
+    <Compile Update="Strings.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </Compile>
+    <!-- MaterialDB typed DataSet -->
+    <EmbeddedResource Include="PSHelper\MaterialDB.xsd" />
   </ItemGroup>
 
   <ItemGroup>

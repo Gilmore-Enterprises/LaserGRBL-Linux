@@ -16,8 +16,8 @@ namespace LaserGRBL
 	public class HotKeysManager : List<HotKeysManager.HotKey>
 	{
 		[NonSerialized] private GrblCore mCore;
-        [NonSerialized] private PreviewForm mPreviewForm;
-		[NonSerialized] private JogForm mJogForm;
+        [NonSerialized] private PreviewFormProxy mPreviewForm;
+		[NonSerialized] private JogFormProxy mJogForm;
 		[NonSerialized] List<int> mCustomButtonPressed;
 		[NonSerialized] private bool mJogKeyRequested = false;
 
@@ -197,11 +197,11 @@ namespace LaserGRBL
 			Add(toadd);
 		}
 
-		public void Init(GrblCore core, PreviewForm cbform, JogForm jogform)
+		public void Init(GrblCore core, PreviewFormProxy cbform, JogFormProxy JogFormProxy)
 		{
 			mCore = core;
             mPreviewForm = cbform;
-			mJogForm = jogform;
+			mJogForm = JogFormProxy;
             mCustomButtonPressed = new List<int>();
             AddAllFeatures();
 			Sort(CompareKey);
@@ -212,7 +212,7 @@ namespace LaserGRBL
 			return x.Action - y.Action;
 		}
 
-		internal bool ManageHotKeys(Form parent, Keys keys)
+		internal bool ManageHotKeys(object parent, Keys keys)
 		{
             if (keys == Keys.None)
             {
@@ -240,7 +240,7 @@ namespace LaserGRBL
 			return rv;	
 		}
 
-		private bool PerformAction(Form parent, HotKey.Actions action)
+		private bool PerformAction(object parent, HotKey.Actions action)
 		{
 			switch (action)
 			{
@@ -373,32 +373,19 @@ namespace LaserGRBL
 		}
         private void EmulateCustomButtonDown(int index)
         {
-            List<PreviewForm.CustomButtonIB> buttons = mPreviewForm.CustomImageButtons;
-            if (index < buttons.Count)
+            // Phase 4 — custom button press events dispatched by App layer.
+            if (!mCustomButtonPressed.Contains(index))
             {
-                if (!mCustomButtonPressed.Contains(index))
-                { 
-                    mCustomButtonPressed.Add(index);
-                    buttons[index].EmulateMouseInside = true;
-                    buttons[index].PerformMouseDown(new MouseEventArgs(MouseButtons.Left, 1, 1, 1, 0));
-                }
+                mCustomButtonPressed.Add(index);
+                mPreviewForm?.EmulateCustomButtonDown(index);
             }
         }
 
         private void EmulateCustomButtonUp()
         {
-            List<PreviewForm.CustomButtonIB> buttons = mPreviewForm.CustomImageButtons;
-
+            // Phase 4 — custom button release events dispatched by App layer.
             foreach (int index in mCustomButtonPressed)
-            {
-                if (index < buttons.Count)
-                {
-                    buttons[index].PerformMouseUp(new MouseEventArgs(MouseButtons.Left, 1, 1, 1, 0));
-                    buttons[index].PerformClick(new MouseEventArgs(MouseButtons.Left, 1, 1, 1, 0));
-                    buttons[index].EmulateMouseInside = false;
-                }
-            }
-
+                mPreviewForm?.EmulateCustomButtonUp(index);
             mCustomButtonPressed.Clear();
         }
 
@@ -411,12 +398,23 @@ namespace LaserGRBL
 			return rv;
 		}
 
-		private static KeysConverter cnv = new KeysConverter();
+		// Replaces System.Windows.Forms.KeysConverter.ConvertToString — same output format.
+		private static string KeysToString(Keys k)
+		{
+			var parts = new System.Collections.Generic.List<string>();
+			if ((k & Keys.Control) != 0) parts.Add("Ctrl");
+			if ((k & Keys.Alt)     != 0) parts.Add("Alt");
+			if ((k & Keys.Shift)   != 0) parts.Add("Shift");
+			Keys key = k & ~Keys.Modifiers;
+			if (key != Keys.None) parts.Add(key.ToString());
+			return string.Join("+", parts);
+		}
+
 		internal string GetHotKeyString(HotKey.Actions action)
 		{
 			foreach (HotKey hk in this)
 				if (hk.Action == action && hk.Combination != Keys.None)
-					return cnv.ConvertToString(hk.Combination);
+					return KeysToString(hk.Combination);
 
 			return null;
 		}
