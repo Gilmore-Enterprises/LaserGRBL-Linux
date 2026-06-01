@@ -174,7 +174,8 @@ namespace LaserGRBL
 		private void MnUnlock_Click       (object s, RoutedEventArgs e) => _core?.EnqueueCommand(new GrblCommand("$X"));
 		private async void MnGrblConfig_Click(object s, RoutedEventArgs e)
 			=> await new Dialogs.GrblConfigDialog(_core).ShowDialog(this);
-		private void MnSettings_Click     (object s, RoutedEventArgs e) { }
+		private async void MnSettings_Click(object s, RoutedEventArgs e)
+			=> await new Dialogs.SettingsDialog(_core).ShowDialog(this);
 		private void MnMaterialDB_Click   (object s, RoutedEventArgs e) { }
 		private void MnWiFiDiscovery_Click(object s, RoutedEventArgs e) { }
 		private void MnExit_Click         (object s, RoutedEventArgs e) => Close();
@@ -270,6 +271,16 @@ namespace LaserGRBL
 		int    IGrblCoreUI.ShowRunFromPosition(int total, bool homing, out bool homingOut) { homingOut = false; return -1; }
 		int    IGrblCoreUI.ShowResumeJob(int ex, int sent, int tgt, object issue, bool homingEn, bool homing, out bool homingOut, bool setwco, out bool setwcoOut, object wco) { homingOut = false; setwcoOut = false; return -1; }
 		string IGrblCoreUI.ShowLaserSelector() => null;
-		bool   IGrblCoreUI.ShowSafetyCountdown() => true;
+		bool IGrblCoreUI.ShowSafetyCountdown()
+		{
+			var tcs = new System.Threading.Tasks.TaskCompletionSource<bool>();
+			Dispatcher.UIThread.Post(async () =>
+			{
+				var dlg = new Dialogs.SafetyCountdownDialog();
+				await dlg.ShowDialog(this);
+				tcs.SetResult(dlg.CanGo);
+			});
+			return tcs.Task.GetAwaiter().GetResult();
+		}
 	}
 }

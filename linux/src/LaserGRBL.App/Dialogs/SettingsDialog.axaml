@@ -1,0 +1,144 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="LaserGRBL.Dialogs.SettingsDialog"
+        Title="Settings"
+        Width="680" Height="560"
+        WindowStartupLocation="CenterOwner">
+  <DockPanel Margin="8">
+
+    <!-- Bottom row -->
+    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal"
+                HorizontalAlignment="Right" Spacing="8" Margin="0,8,0,0">
+      <Button Content="OK"     Click="BtnOK_Click"     IsDefault="True" Width="80"/>
+      <Button Content="Cancel" Click="BtnCancel_Click" IsCancel="True"  Width="80"/>
+    </StackPanel>
+
+    <TabControl x:Name="MainTabs">
+
+      <!-- Hardware tab -->
+      <TabItem Header="Hardware">
+        <ScrollViewer>
+          <StackPanel Spacing="8" Margin="8">
+
+            <HeaderedContentControl Header="Serial protocol">
+              <StackPanel Spacing="4" Margin="4">
+                <RadioButton x:Name="RbProtocolUsb"    Content="USB Serial (standard)" GroupName="Proto" IsChecked="True"/>
+                <RadioButton x:Name="RbProtocolUsb2"   Content="USB Serial (alternative)" GroupName="Proto"/>
+                <RadioButton x:Name="RbProtocolRjcp"   Content="RJCP Serial (Linux/macOS)" GroupName="Proto"/>
+                <RadioButton x:Name="RbProtocolTelnet" Content="Telnet (WiFi)" GroupName="Proto"/>
+                <RadioButton x:Name="RbProtocolWifi"   Content="LaserWeb ESP8266 (WiFi)" GroupName="Proto"/>
+              </StackPanel>
+            </HeaderedContentControl>
+
+            <HeaderedContentControl Header="Firmware">
+              <StackPanel Spacing="4" Margin="4">
+                <RadioButton x:Name="RbFwGrbl"    Content="GRBL"    GroupName="Fw" IsChecked="True"/>
+                <RadioButton x:Name="RbFwSmoothie" Content="Smoothieware" GroupName="Fw"/>
+                <RadioButton x:Name="RbFwMarlin"  Content="Marlin"  GroupName="Fw"/>
+              </StackPanel>
+            </HeaderedContentControl>
+
+            <HeaderedContentControl Header="Machine dimensions">
+              <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,*,8,Auto,*" Margin="4">
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Table width (mm):" VerticalAlignment="Center"/>
+                <NumericUpDown Grid.Row="0" Grid.Column="1" x:Name="NudTableWidth"
+                               Minimum="1" Maximum="5000" Value="200" Increment="10"/>
+                <TextBlock Grid.Row="0" Grid.Column="3" Text="Table height (mm):" VerticalAlignment="Center"/>
+                <NumericUpDown Grid.Row="0" Grid.Column="4" x:Name="NudTableHeight"
+                               Minimum="1" Maximum="5000" Value="200" Increment="10"/>
+              </Grid>
+            </HeaderedContentControl>
+
+            <HeaderedContentControl Header="Threading">
+              <ComboBox x:Name="CbThreadingMode" HorizontalAlignment="Stretch" Margin="4">
+                <ComboBoxItem Content="Insane"/>
+                <ComboBoxItem Content="Ultra Fast"/>
+                <ComboBoxItem Content="Fast" IsSelected="True"/>
+                <ComboBoxItem Content="Slow"/>
+                <ComboBoxItem Content="Laser Engraver"/>
+              </ComboBox>
+            </HeaderedContentControl>
+
+          </StackPanel>
+        </ScrollViewer>
+      </TabItem>
+
+      <!-- Raster Import tab -->
+      <TabItem Header="Raster Import">
+        <ScrollViewer>
+          <StackPanel Spacing="8" Margin="8">
+            <HeaderedContentControl Header="Default direction">
+              <ComboBox x:Name="CbImportDirection" HorizontalAlignment="Stretch" Margin="4">
+                <ComboBoxItem Content="Horizontal"/>
+                <ComboBoxItem Content="Vertical"/>
+                <ComboBoxItem Content="Diagonal"/>
+              </ComboBox>
+            </HeaderedContentControl>
+            <HeaderedContentControl Header="Laser on/off commands">
+              <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,*" Margin="4">
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Laser ON:" VerticalAlignment="Center"/>
+                <TextBox Grid.Row="0" Grid.Column="1" x:Name="TxtLaserOn"  Text="M3"/>
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Laser OFF:" VerticalAlignment="Center" Margin="0,4,0,0"/>
+                <TextBox Grid.Row="1" Grid.Column="1" x:Name="TxtLaserOff" Text="M5"/>
+              </Grid>
+            </HeaderedContentControl>
+          </StackPanel>
+        </ScrollViewer>
+      </TabItem>
+
+      <!-- Color Scheme tab -->
+      <TabItem Header="Appearance">
+        <StackPanel Spacing="8" Margin="8">
+          <TextBlock Text="Color scheme (safety glasses):"/>
+          <ComboBox x:Name="CbColorScheme" HorizontalAlignment="Left" MinWidth="200">
+            <ComboBoxItem Content="CAD Style"/>
+            <ComboBoxItem Content="CAD Dark"/>
+            <ComboBoxItem Content="Blue Laser"/>
+            <ComboBoxItem Content="Red Laser" IsSelected="True"/>
+            <ComboBoxItem Content="Dark"/>
+            <ComboBoxItem Content="Hacker"/>
+            <ComboBoxItem Content="Nighty"/>
+          </ComboBox>
+          <TextBlock Text="Language (restart required):"/>
+          <ComboBox x:Name="CbLanguage" HorizontalAlignment="Left" MinWidth="200">
+            <ComboBoxItem Content="English (default)"/>
+            <ComboBoxItem Content="Italiano"/>
+            <ComboBoxItem Content="Español"/>
+            <ComboBoxItem Content="Français"/>
+            <ComboBoxItem Content="Deutsch"/>
+            <ComboBoxItem Content="Português BR"/>
+            <ComboBoxItem Content="中文 (简体)"/>
+          </ComboBox>
+        </StackPanel>
+      </TabItem>
+
+      <!-- GCode tab -->
+      <TabItem Header="G-Code">
+        <ScrollViewer>
+          <StackPanel Spacing="8" Margin="8">
+            <TextBlock Text="Custom header (sent before job):"/>
+            <TextBox x:Name="TxtHeader" Height="60" AcceptsReturn="True"
+                     Text="G90 (use absolute coordinates)"/>
+            <TextBlock Text="Custom footer (sent after job):"/>
+            <TextBox x:Name="TxtFooter" Height="60" AcceptsReturn="True"
+                     Text="G0 X0 Y0 (go to origin)"/>
+            <CheckBox x:Name="CbDisableFastSkip" Content="Disable G0 fast skip (use G1 for travel)"/>
+          </StackPanel>
+        </ScrollViewer>
+      </TabItem>
+
+      <!-- Sound tab -->
+      <TabItem Header="Sound">
+        <StackPanel Spacing="8" Margin="8">
+          <TextBlock Text="Event sounds:" FontWeight="Bold"/>
+          <CheckBox x:Name="CbSoundSuccess"    Content="Job complete (success.wav)"/>
+          <CheckBox x:Name="CbSoundWarning"    Content="Non-fatal error (warning.wav)"/>
+          <CheckBox x:Name="CbSoundFatal"      Content="Fatal error (fatal.wav)"/>
+          <CheckBox x:Name="CbSoundConnect"    Content="Connected (connect.wav)"/>
+          <CheckBox x:Name="CbSoundDisconnect" Content="Disconnected (disconnect.wav)"/>
+        </StackPanel>
+      </TabItem>
+
+    </TabControl>
+  </DockPanel>
+</Window>
