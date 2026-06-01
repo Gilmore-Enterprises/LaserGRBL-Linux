@@ -169,7 +169,7 @@ namespace LaserGRBL
 			public CumulativeElement Z
 			{ get { return mCurZ; } }
 
-			internal bool TrueMovement()
+			public bool TrueMovement()
 			{ return (mCurX.Number != mCurX.Previous || mCurY.Number != mCurY.Previous || G2G3); }
 
 
@@ -199,7 +199,7 @@ namespace LaserGRBL
 					return 0;
 			}
 
-			internal int GetCurrentAlpha(ProgramRange.SRange range)
+			public int GetCurrentAlpha(ProgramRange.SRange range)
 			{
 				if (!LaserBurning)
 					return 150; //supportPWM ? 150 : 50
@@ -240,7 +240,7 @@ namespace LaserGRBL
 				mCurZ = new CumulativeElement("Z0");
 			}
 
-			internal G2G3Helper GetArcHelper(GrblCommand cmd)
+			public G2G3Helper GetArcHelper(GrblCommand cmd)
 			{
 				LastArcHelperResult = new G2G3Helper(this, cmd);
 				return LastArcHelperResult;

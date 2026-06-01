@@ -112,6 +112,8 @@ namespace LaserGRBL
 				BtnSave.IsEnabled = MnSave.IsEnabled = _core.HasProgram;
 				BtnRun.IsEnabled  = _core.IsConnected && _core.HasProgram;
 				PreviewHint.IsVisible = !_core.HasProgram;
+				// Update preview
+				PreviewPanel.SetFile(_core.HasProgram ? _core.LoadedFile : null);
 			});
 		}
 
@@ -139,9 +141,7 @@ namespace LaserGRBL
 			TxtCommand.Text = "";
 		}
 
-		private void PreviewCanvas_PointerPressed (object s, PointerPressedEventArgs e) {}
-		private void PreviewCanvas_PointerMoved  (object s, PointerEventArgs e) {}
-		private void PreviewCanvas_PointerReleased(object s, PointerReleasedEventArgs e) {}
+		// Preview is handled by GrblPreviewControl — no code-behind canvas handlers needed.
 
 		private void BtnRun_Click     (object s, RoutedEventArgs e) => _core?.RunProgram(null);
 		private void BtnFeedHold_Click(object s, RoutedEventArgs e) => _core?.FeedHold(false);

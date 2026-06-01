@@ -1,5 +1,6 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:LaserGRBL"
         x:Class="LaserGRBL.MainWindow"
         Title="LaserGRBL"
         Width="1100" Height="720"
@@ -209,19 +210,14 @@
       <GridSplitter Grid.Column="1" Width="4"
                     HorizontalAlignment="Stretch" Background="#CCCCCC"/>
 
-      <!-- Right panel: preview -->
-      <Border Grid.Column="2" Background="#212830">
-        <Grid>
-          <Canvas x:Name="PreviewCanvas" Background="Transparent"
-                  PointerPressed="PreviewCanvas_PointerPressed"
-                  PointerMoved="PreviewCanvas_PointerMoved"
-                  PointerReleased="PreviewCanvas_PointerReleased"/>
-          <TextBlock x:Name="PreviewHint"
-                     HorizontalAlignment="Center" VerticalAlignment="Center"
-                     Foreground="#888888" FontSize="14"
-                     Text="Load a G-code file or import an image to see the preview"/>
-        </Grid>
-      </Border>
+      <!-- Right panel: G-code preview (GrblPreviewControl) -->
+      <Grid Grid.Column="2">
+        <local:GrblPreviewControl x:Name="PreviewPanel"/>
+        <TextBlock x:Name="PreviewHint"
+                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                   Foreground="#888888" FontSize="14"
+                   Text="Load a G-code file or import an image to see the preview"/>
+      </Grid>
 
     </Grid>
   </DockPanel>
