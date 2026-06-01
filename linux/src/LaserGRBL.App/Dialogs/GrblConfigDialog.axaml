@@ -1,0 +1,27 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:LaserGRBL.Dialogs"
+        x:Class="LaserGRBL.Dialogs.GrblConfigDialog"
+        Title="GRBL Configuration"
+        Width="640" Height="480"
+        WindowStartupLocation="CenterOwner">
+  <DockPanel Margin="8">
+    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal"
+                HorizontalAlignment="Right" Spacing="8" Margin="0,8,0,0">
+      <Button Content="Write"  Click="BtnWrite_Click"  Width="80"/>
+      <Button Content="Export" Click="BtnExport_Click" Width="80"/>
+      <Button Content="Import" Click="BtnImport_Click" Width="80"/>
+      <Button Content="Close"  Click="BtnClose_Click"  IsCancel="True" Width="80"/>
+    </StackPanel>
+    <!-- DataGrid with x:DataType for compiled bindings -->
+    <DataGrid x:Name="ConfigGrid"
+              IsReadOnly="False"
+              x:DataType="local:GrblConfigRow">
+      <DataGrid.Columns>
+        <DataGridTextColumn Header="Parameter"   Binding="{Binding Key}"         Width="90"  IsReadOnly="True"/>
+        <DataGridTextColumn Header="Value"       Binding="{Binding Value}"       Width="120"/>
+        <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*"   IsReadOnly="True"/>
+      </DataGrid.Columns>
+    </DataGrid>
+  </DockPanel>
+</Window>

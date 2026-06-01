@@ -172,7 +172,8 @@ namespace LaserGRBL
 		private void MnGrblReset_Click    (object s, RoutedEventArgs e) => _core?.GrblReset();
 		private void MnGoHome_Click       (object s, RoutedEventArgs e) => _core?.EnqueueCommand(new GrblCommand("$H"));
 		private void MnUnlock_Click       (object s, RoutedEventArgs e) => _core?.EnqueueCommand(new GrblCommand("$X"));
-		private void MnGrblConfig_Click   (object s, RoutedEventArgs e) { }
+		private async void MnGrblConfig_Click(object s, RoutedEventArgs e)
+			=> await new Dialogs.GrblConfigDialog(_core).ShowDialog(this);
 		private void MnSettings_Click     (object s, RoutedEventArgs e) { }
 		private void MnMaterialDB_Click   (object s, RoutedEventArgs e) { }
 		private void MnWiFiDiscovery_Click(object s, RoutedEventArgs e) { }
@@ -244,7 +245,14 @@ namespace LaserGRBL
 			Dispatcher.UIThread.Post(async () => { r = await new SaveFileDialog{ Title="Save Project", DefaultExtension="lps" }.ShowAsync(this); tcs.SetResult(); });
 			tcs.Task.GetAwaiter().GetResult(); return r;
 		}
-		void IGrblCoreUI.ShowRasterImport(GrblCore core, string filename, bool append) { }
+		void IGrblCoreUI.ShowRasterImport(GrblCore core, string filename, bool append)
+		{
+			Dispatcher.UIThread.Post(async () =>
+			{
+				var dlg = new Dialogs.RasterImportDialog(core, filename, append);
+				await dlg.ShowDialog(this);
+			});
+		}
 		void IGrblCoreUI.ShowVectorImport(GrblCore core, string filename, bool append)
 		{
 			// Phase 6 adds the full SVG mode dialog. For now: use headless SVG import

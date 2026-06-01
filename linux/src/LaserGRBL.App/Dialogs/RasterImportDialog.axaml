@@ -1,0 +1,116 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="LaserGRBL.Dialogs.RasterImportDialog"
+        Title="Raster Image Import"
+        Width="700" Height="580"
+        CanResize="True" WindowStartupLocation="CenterOwner">
+  <DockPanel Margin="8">
+
+    <!-- Bottom buttons -->
+    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal"
+                HorizontalAlignment="Right" Spacing="8" Margin="0,8,0,0">
+      <Button x:Name="BtnOK"     Content="OK"     Click="BtnOK_Click"     IsDefault="True" Width="80"/>
+      <Button x:Name="BtnCancel" Content="Cancel" Click="BtnCancel_Click" IsCancel="True"  Width="80"/>
+    </StackPanel>
+
+    <!-- Main content: settings left, preview right -->
+    <Grid ColumnDefinitions="260,8,*">
+
+      <!-- Settings panel -->
+      <ScrollViewer Grid.Column="0">
+        <StackPanel Spacing="8">
+
+          <!-- Conversion mode — HeaderedContentControl replaces WinForms GroupBox -->
+          <HeaderedContentControl Header="Conversion mode">
+            <StackPanel Spacing="4" Margin="4">
+              <RadioButton x:Name="RbLineByLine"  Content="Line by line"   GroupName="Mode" IsChecked="True"/>
+              <RadioButton x:Name="RbDithering"   Content="Dithering"      GroupName="Mode"/>
+              <RadioButton x:Name="RbVectorize"   Content="Vectorize"      GroupName="Mode"/>
+              <RadioButton x:Name="RbCenterline"  Content="Centerline"     GroupName="Mode"/>
+            </StackPanel>
+          </HeaderedContentControl>
+
+          <!-- Size -->
+          <HeaderedContentControl Header="Output size">
+            <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="Auto,*" Margin="4">
+              <TextBlock Grid.Row="0" Grid.Column="0" Text="Width (mm):" VerticalAlignment="Center"/>
+              <NumericUpDown Grid.Row="0" Grid.Column="1" x:Name="NudWidth"
+                             Minimum="1" Maximum="500" Value="100" Increment="1"/>
+              <TextBlock Grid.Row="1" Grid.Column="0" Text="Height (mm):" VerticalAlignment="Center" Margin="0,4,0,0"/>
+              <NumericUpDown Grid.Row="1" Grid.Column="1" x:Name="NudHeight"
+                             Minimum="1" Maximum="500" Value="100" Increment="1"/>
+              <TextBlock Grid.Row="2" Grid.Column="0" Text="Resolution:" VerticalAlignment="Center" Margin="0,4,0,0"/>
+              <NumericUpDown Grid.Row="2" Grid.Column="1" x:Name="NudResolution"
+                             Minimum="1" Maximum="20" Value="10" Increment="0.5"/>
+            </Grid>
+          </HeaderedContentControl>
+
+          <!-- Speed / Power -->
+          <HeaderedContentControl Header="Laser">
+            <Grid RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="Auto,*" Margin="4">
+              <TextBlock Grid.Row="0" Grid.Column="0" Text="Mark speed:" VerticalAlignment="Center"/>
+              <NumericUpDown Grid.Row="0" Grid.Column="1" x:Name="NudMarkSpeed"
+                             Minimum="1" Maximum="10000" Value="1000" Increment="100"/>
+              <TextBlock Grid.Row="1" Grid.Column="0" Text="Travel speed:" VerticalAlignment="Center" Margin="0,4,0,0"/>
+              <NumericUpDown Grid.Row="1" Grid.Column="1" x:Name="NudTravelSpeed"
+                             Minimum="1" Maximum="10000" Value="3000" Increment="100"/>
+              <TextBlock Grid.Row="2" Grid.Column="0" Text="Min power %:" VerticalAlignment="Center" Margin="0,4,0,0"/>
+              <NumericUpDown Grid.Row="2" Grid.Column="1" x:Name="NudMinPower"
+                             Minimum="0" Maximum="100" Value="0" Increment="1"/>
+              <TextBlock Grid.Row="3" Grid.Column="0" Text="Max power %:" VerticalAlignment="Center" Margin="0,4,0,0"/>
+              <NumericUpDown Grid.Row="3" Grid.Column="1" x:Name="NudMaxPower"
+                             Minimum="1" Maximum="100" Value="100" Increment="1"/>
+            </Grid>
+          </HeaderedContentControl>
+
+          <!-- Grayscale formula -->
+          <HeaderedContentControl Header="Grayscale">
+            <StackPanel Spacing="4" Margin="4">
+              <ComboBox x:Name="CbFormula" HorizontalAlignment="Stretch">
+                <ComboBoxItem Content="Luminance"   IsSelected="True"/>
+                <ComboBoxItem Content="Average"/>
+                <ComboBoxItem Content="Max channel"/>
+              </ComboBox>
+              <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Brightness:" VerticalAlignment="Center"/>
+                <Slider Grid.Row="0" Grid.Column="1" x:Name="SlBrightness"
+                        Minimum="-255" Maximum="255" Value="0"/>
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Contrast:" VerticalAlignment="Center"/>
+                <Slider Grid.Row="1" Grid.Column="1" x:Name="SlContrast"
+                        Minimum="0.1" Maximum="3" Value="1"/>
+              </Grid>
+            </StackPanel>
+          </HeaderedContentControl>
+
+          <!-- Dithering options -->
+          <HeaderedContentControl x:Name="GbDithering" Header="Dithering algorithm" IsVisible="False">
+            <ComboBox x:Name="CbDitheringAlgo" HorizontalAlignment="Stretch" Margin="4">
+              <ComboBoxItem Content="Floyd-Steinberg" IsSelected="True"/>
+              <ComboBoxItem Content="Atkinson"/>
+              <ComboBoxItem Content="Burkes"/>
+              <ComboBoxItem Content="Stucki"/>
+              <ComboBoxItem Content="Sierra 3"/>
+              <ComboBoxItem Content="Sierra 2"/>
+              <ComboBoxItem Content="Sierra Lite"/>
+              <ComboBoxItem Content="Jarvis-Judice-Ninke"/>
+              <ComboBoxItem Content="Random"/>
+            </ComboBox>
+          </HeaderedContentControl>
+
+        </StackPanel>
+      </ScrollViewer>
+
+      <!-- Preview panel -->
+      <Border Grid.Column="2" Background="#1E1E1E" CornerRadius="4">
+        <Grid>
+          <Image x:Name="PreviewImage" Stretch="Uniform"/>
+          <TextBlock x:Name="PreviewMessage"
+                     HorizontalAlignment="Center" VerticalAlignment="Center"
+                     Foreground="#888888" FontSize="12"
+                     Text="Preview will appear here"/>
+        </Grid>
+      </Border>
+
+    </Grid>
+  </DockPanel>
+</Window>
