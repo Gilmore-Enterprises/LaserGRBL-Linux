@@ -18,16 +18,19 @@ namespace LaserGRBL
 
 namespace LaserGRBL.SvgConverter
 {
-	public enum ColorFilter { All, Red, Green, Blue, Black }
+	// ColorFilter enum moved to LaserGRBL.Imaging (the real implementation).
+	// Defined here as a type alias using the same underlying int values so
+	// Core compiles without referencing Imaging.
+	public enum ColorFilter { All = 0, Red = 1, Green = 2, Blue = 3, Black = 4 }
 
-	// Minimal GCodeFromSVG stub so GrblFile.LoadImportedSVG compiles.
+	// Minimal GCodeFromSVG stub — real implementation is in LaserGRBL.Imaging.
 	public class GCodeFromSVG
 	{
 		public int GCodeXYFeed { get; set; }
 		public bool UseLegacyBezier { get; set; }
 		public bool SvgScaleApply { get; set; }
 		public float SvgMaxSize { get; set; }
-		public System.Numerics.Vector2 UserOffset { get; set; }
+		public CorePoint UserOffset { get; set; }
 
 		public string convertFromFile(string file, GrblCore core, ColorFilter filter) => "";
 		public string convertFromText(string text, GrblCore core) => "";

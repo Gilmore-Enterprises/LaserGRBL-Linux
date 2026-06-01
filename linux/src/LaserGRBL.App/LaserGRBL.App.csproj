@@ -11,7 +11,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LaserGRBL.Core\LaserGRBL.Core.csproj" />
+    <!-- Alias Core so its ColorFilter can be disambiguated from Imaging's copy. -->
+    <ProjectReference Include="..\LaserGRBL.Core\LaserGRBL.Core.csproj"    Aliases="Core,global" />
     <ProjectReference Include="..\LaserGRBL.Imaging\LaserGRBL.Imaging.csproj" />
     <ProjectReference Include="..\LaserGRBL.Platform\LaserGRBL.Platform.csproj" />
   </ItemGroup>

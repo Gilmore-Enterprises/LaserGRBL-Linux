@@ -1,12 +1,228 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="LaserGRBL.MainWindow"
-        Width="900" Height="600"
-        Title="LaserGRBL (Linux port — scaffolding)">
-  <!-- Phase 4 replaces this placeholder with the ported MainForm layout. -->
-  <Panel>
-    <TextBlock HorizontalAlignment="Center"
-               VerticalAlignment="Center"
-               Text="LaserGRBL Linux port — Phase 0 skeleton" />
-  </Panel>
+        Title="LaserGRBL"
+        Width="1100" Height="720"
+        MinWidth="800" MinHeight="500"
+        WindowStartupLocation="CenterScreen">
+
+  <DockPanel LastChildFill="True">
+
+    <!-- ── Menu Bar ─────────────────────────────────────────────────────── -->
+    <Menu DockPanel.Dock="Top">
+      <MenuItem Header="_GRBL">
+        <MenuItem Header="_Connect"        x:Name="MnConnect"        Click="MnConnect_Click"/>
+        <MenuItem Header="_Disconnect"     x:Name="MnDisconnect"     Click="MnDisconnect_Click" IsEnabled="False"/>
+        <MenuItem Header="WiFi _Discovery" x:Name="MnWiFiDiscovery"  Click="MnWiFiDiscovery_Click"/>
+        <Separator/>
+        <MenuItem Header="GRBL _Reset"     x:Name="MnGrblReset"     Click="MnGrblReset_Click"  IsEnabled="False"/>
+        <MenuItem Header="Go _Home ($H)"   x:Name="MnGoHome"        Click="MnGoHome_Click"     IsEnabled="False"/>
+        <MenuItem Header="_Unlock ($X)"    x:Name="MnUnlock"        Click="MnUnlock_Click"     IsEnabled="False"/>
+        <Separator/>
+        <MenuItem Header="GRBL _Config"    x:Name="MnGrblConfig"    Click="MnGrblConfig_Click" IsEnabled="False"/>
+        <MenuItem Header="_Settings"       x:Name="MnSettings"      Click="MnSettings_Click"/>
+        <MenuItem Header="_Material DB"    x:Name="MnMaterialDB"    Click="MnMaterialDB_Click"/>
+        <Separator/>
+        <MenuItem Header="E_xit"           Click="MnExit_Click"/>
+      </MenuItem>
+      <MenuItem Header="_File">
+        <MenuItem Header="_Open file..."     x:Name="MnOpen"         Click="MnOpen_Click"/>
+        <MenuItem Header="_Save GCODE..."    x:Name="MnSave"         Click="MnSave_Click"        IsEnabled="False"/>
+        <MenuItem Header="Save _Project..."  x:Name="MnSaveProject"  Click="MnSaveProject_Click" IsEnabled="False"/>
+        <Separator/>
+        <MenuItem Header="Import _Raster..." x:Name="MnImportRaster" Click="MnImportRaster_Click"/>
+        <MenuItem Header="Import _SVG..."    x:Name="MnImportSVG"    Click="MnImportSVG_Click"/>
+      </MenuItem>
+      <MenuItem Header="_Tools">
+        <MenuItem Header="_Custom buttons"   Click="MnCustomButtons_Click"/>
+        <MenuItem Header="Manage _Hotkeys"   Click="MnHotkeys_Click"/>
+        <Separator/>
+        <MenuItem Header="Laser selector"    Click="MnLaserSelector_Click"/>
+        <MenuItem Header="Power-vs-speed"    Click="MnPowerVsSpeed_Click"/>
+        <MenuItem Header="Shake test"        Click="MnShakeTest_Click"/>
+        <MenuItem Header="Cutting test"      Click="MnCuttingTest_Click"/>
+        <Separator/>
+        <MenuItem Header="Flash GRBL firmware" Click="MnFlashGrbl_Click"/>
+        <MenuItem Header="GRBL Emulator"     Click="MnEmulator_Click"/>
+      </MenuItem>
+      <MenuItem Header="_Help">
+        <MenuItem Header="LaserGRBL Website" Click="MnWebsite_Click"/>
+        <MenuItem Header="Check for updates" Click="MnUpdate_Click"/>
+        <Separator/>
+        <MenuItem Header="About"             Click="MnAbout_Click"/>
+      </MenuItem>
+    </Menu>
+
+    <!-- ── Status Bar ────────────────────────────────────────────────────── -->
+    <!-- Avalonia StatusBar uses plain StackPanel children, no StatusBarItem -->
+    <Border DockPanel.Dock="Bottom" Background="#F0F0F0"
+            BorderThickness="0,1,0,0" BorderBrush="#CCCCCC" Height="24">
+      <DockPanel LastChildFill="False" Margin="4,0">
+        <TextBlock x:Name="StatusMachine" Text="Disconnected" MinWidth="110"
+                   VerticalAlignment="Center" FontSize="11"/>
+        <Separator Width="1" Background="#CCCCCC" Margin="4,2"/>
+        <TextBlock x:Name="StatusPosition" Text="X:--- Y:---" MinWidth="150"
+                   VerticalAlignment="Center" FontSize="11"/>
+        <Separator Width="1" Background="#CCCCCC" Margin="4,2"/>
+        <TextBlock x:Name="StatusBuffer" Text="Buf:---" MinWidth="60"
+                   VerticalAlignment="Center" FontSize="11"/>
+        <Separator Width="1" Background="#CCCCCC" Margin="4,2"/>
+        <ProgressBar x:Name="PbBuffer" Minimum="0" Maximum="100" Value="0"
+                     Width="80" Height="12" VerticalAlignment="Center"/>
+        <Separator Width="1" Background="#CCCCCC" Margin="4,2"/>
+        <TextBlock x:Name="StatusEstimated" Text="Est:--:--" MinWidth="80"
+                   VerticalAlignment="Center" FontSize="11"/>
+      </DockPanel>
+    </Border>
+
+    <!-- ── Body ──────────────────────────────────────────────────────────── -->
+    <Grid ColumnDefinitions="320,4,*">
+
+      <!-- Left panel -->
+      <DockPanel Grid.Column="0">
+
+        <!-- Connection row -->
+        <Border DockPanel.Dock="Top" Padding="4,4,4,4"
+                BorderThickness="0,0,0,1" BorderBrush="#CCCCCC">
+          <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,8,90,8,70">
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Port:" FontSize="11"/>
+            <ComboBox Grid.Row="1" Grid.Column="0" x:Name="CbCOM"
+                      HorizontalAlignment="Stretch" Height="26" FontSize="11"/>
+
+            <TextBlock Grid.Row="0" Grid.Column="2" Text="Baud:" FontSize="11"/>
+            <ComboBox Grid.Row="1" Grid.Column="2" x:Name="CbBaud" Height="26" FontSize="11">
+              <ComboBoxItem Content="115200" IsSelected="True"/>
+              <ComboBoxItem Content="57600"/>
+              <ComboBoxItem Content="38400"/>
+              <ComboBoxItem Content="9600"/>
+            </ComboBox>
+
+            <Button Grid.Row="0" Grid.RowSpan="2" Grid.Column="4"
+                    x:Name="BtnConnectMain" Click="MnConnect_Click"
+                    Content="Connect" Height="40" FontSize="11"/>
+
+            <TextBlock Grid.Row="2" Grid.ColumnSpan="5" x:Name="LblConnStatus"
+                       Text="Not connected" FontSize="10" Foreground="Gray" Margin="0,2,0,0"/>
+          </Grid>
+        </Border>
+
+        <!-- Jog -->
+        <Border DockPanel.Dock="Top" Padding="4"
+                BorderThickness="0,0,0,1" BorderBrush="#CCCCCC">
+          <StackPanel>
+            <TextBlock Text="Jog" FontWeight="Bold" FontSize="11" Margin="0,0,0,4"/>
+            <Grid RowDefinitions="28,28,28" ColumnDefinitions="28,28,28"
+                  HorizontalAlignment="Center">
+              <Button Grid.Row="0" Grid.Column="1" Content="↑"  Click="JogYPlus_Click"
+                      IsEnabled="False" x:Name="BtnJogYPlus" FontSize="14" Padding="2"/>
+              <Button Grid.Row="1" Grid.Column="0" Content="←"  Click="JogXMinus_Click"
+                      IsEnabled="False" x:Name="BtnJogXMinus" FontSize="14" Padding="2"/>
+              <Button Grid.Row="1" Grid.Column="1" Content="⊙"  Click="JogHome_Click"
+                      IsEnabled="False" x:Name="BtnJogHome"   FontSize="14" Padding="2"/>
+              <Button Grid.Row="1" Grid.Column="2" Content="→"  Click="JogXPlus_Click"
+                      IsEnabled="False" x:Name="BtnJogXPlus"  FontSize="14" Padding="2"/>
+              <Button Grid.Row="2" Grid.Column="1" Content="↓"  Click="JogYMinus_Click"
+                      IsEnabled="False" x:Name="BtnJogYMinus" FontSize="14" Padding="2"/>
+            </Grid>
+            <Grid ColumnDefinitions="Auto,*,8,Auto,*" Margin="0,4,0,0">
+              <TextBlock Grid.Column="0" Text="Step:" VerticalAlignment="Center" FontSize="11"/>
+              <ComboBox Grid.Column="1" x:Name="CbJogStep" Height="22" FontSize="11">
+                <ComboBoxItem Content="0.1"/>
+                <ComboBoxItem Content="1"/>
+                <ComboBoxItem Content="10"/>
+                <ComboBoxItem Content="100" IsSelected="True"/>
+              </ComboBox>
+              <TextBlock Grid.Column="3" Text="mm/m:" VerticalAlignment="Center" FontSize="11"/>
+              <ComboBox Grid.Column="4" x:Name="CbJogSpeed" Height="22" FontSize="11">
+                <ComboBoxItem Content="100"/>
+                <ComboBoxItem Content="1000" IsSelected="True"/>
+                <ComboBoxItem Content="3000"/>
+              </ComboBox>
+            </Grid>
+          </StackPanel>
+        </Border>
+
+        <!-- Override sliders -->
+        <Border DockPanel.Dock="Top" Padding="4"
+                BorderThickness="0,0,0,1" BorderBrush="#CCCCCC">
+          <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="56,*,30">
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Feed%:" FontSize="11" VerticalAlignment="Center"/>
+            <Slider  Grid.Row="0" Grid.Column="1" x:Name="SlOvLinear"
+                     Minimum="10" Maximum="200" Value="100" IsEnabled="False"
+                     ValueChanged="SlOvLinear_Changed"/>
+            <TextBlock Grid.Row="0" Grid.Column="2" x:Name="LblOvLinear" Text="100"
+                       FontSize="11" VerticalAlignment="Center"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Speed%:" FontSize="11" VerticalAlignment="Center"/>
+            <Slider  Grid.Row="1" Grid.Column="1" x:Name="SlOvSpeed"
+                     Minimum="25" Maximum="200" Value="100" IsEnabled="False"
+                     ValueChanged="SlOvSpeed_Changed"/>
+            <TextBlock Grid.Row="1" Grid.Column="2" x:Name="LblOvSpeed" Text="100"
+                       FontSize="11" VerticalAlignment="Center"/>
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Power%:" FontSize="11" VerticalAlignment="Center"/>
+            <Slider  Grid.Row="2" Grid.Column="1" x:Name="SlOvPower"
+                     Minimum="10" Maximum="200" Value="100" IsEnabled="False"
+                     ValueChanged="SlOvPower_Changed"/>
+            <TextBlock Grid.Row="2" Grid.Column="2" x:Name="LblOvPower" Text="100"
+                       FontSize="11" VerticalAlignment="Center"/>
+          </Grid>
+        </Border>
+
+        <!-- Run controls row -->
+        <Border DockPanel.Dock="Top" Padding="4"
+                BorderThickness="0,0,0,1" BorderBrush="#CCCCCC">
+          <StackPanel Orientation="Horizontal" Spacing="4">
+            <Button x:Name="BtnRun"      Content="▶ Run"  Click="BtnRun_Click"      IsEnabled="False" FontSize="11"/>
+            <Button x:Name="BtnFeedHold" Content="⏸ Hold" Click="BtnFeedHold_Click" IsEnabled="False" FontSize="11"/>
+            <Button x:Name="BtnResume"   Content="▶▶ Resume" Click="BtnResume_Click" IsEnabled="False" FontSize="11"/>
+            <Button x:Name="BtnReset"    Content="⟳ Reset"  Click="MnGrblReset_Click" IsEnabled="False" FontSize="11"/>
+            <Button x:Name="BtnHome"     Content="⌂ Home"   Click="MnGoHome_Click"  IsEnabled="False" FontSize="11"/>
+            <Button x:Name="BtnUnlock"   Content="🔓 Unlock" Click="MnUnlock_Click"  IsEnabled="False" FontSize="11"/>
+          </StackPanel>
+        </Border>
+
+        <!-- Toolbar: save/open quick access -->
+        <Border DockPanel.Dock="Top" Padding="4,2"
+                BorderThickness="0,0,0,1" BorderBrush="#CCCCCC">
+          <StackPanel Orientation="Horizontal" Spacing="4">
+            <Button Content="📂 Open"  Click="MnOpen_Click"       FontSize="11"/>
+            <Button x:Name="BtnSave"   Content="💾 Save" Click="MnSave_Click" IsEnabled="False" FontSize="11"/>
+            <Button x:Name="BtnDisconnect" Content="Disconnect" Click="MnDisconnect_Click" IsEnabled="False" FontSize="11"/>
+          </StackPanel>
+        </Border>
+
+        <!-- Command console -->
+        <DockPanel LastChildFill="True" Margin="4">
+          <DockPanel DockPanel.Dock="Bottom" Margin="0,4,0,0">
+            <Button DockPanel.Dock="Right" x:Name="BtnSendCommand"
+                    Content="Send" Click="BtnSendCommand_Click"
+                    IsEnabled="False" Width="50" Height="26" FontSize="11"/>
+            <TextBox x:Name="TxtCommand" Height="26" IsEnabled="False"
+                     KeyDown="TxtCommand_KeyDown" FontSize="11"
+                     Watermark="Enter G-code command..."/>
+          </DockPanel>
+          <ListBox x:Name="CommandLog" FontFamily="Courier New, monospace"
+                   FontSize="11" Background="#1E1E1E"/>
+        </DockPanel>
+      </DockPanel>
+
+      <!-- Splitter -->
+      <GridSplitter Grid.Column="1" Width="4"
+                    HorizontalAlignment="Stretch" Background="#CCCCCC"/>
+
+      <!-- Right panel: preview -->
+      <Border Grid.Column="2" Background="#212830">
+        <Grid>
+          <Canvas x:Name="PreviewCanvas" Background="Transparent"
+                  PointerPressed="PreviewCanvas_PointerPressed"
+                  PointerMoved="PreviewCanvas_PointerMoved"
+                  PointerReleased="PreviewCanvas_PointerReleased"/>
+          <TextBlock x:Name="PreviewHint"
+                     HorizontalAlignment="Center" VerticalAlignment="Center"
+                     Foreground="#888888" FontSize="14"
+                     Text="Load a G-code file or import an image to see the preview"/>
+        </Grid>
+      </Border>
+
+    </Grid>
+  </DockPanel>
 </Window>
